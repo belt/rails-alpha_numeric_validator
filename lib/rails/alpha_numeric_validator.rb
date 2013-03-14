@@ -8,8 +8,8 @@ class AlphaNumericValidator < ActiveModel::EachValidator
     :default => /(?:[[:alpha:]]|[[:digit:]])+/,
     :true => /(?:[[:graph:]])+/,
     :limited => /(?:[[:alpha:]]|[[:digit:]]|[_\+\.\?,\-!'\/#])+/,
-    :dns => /(?:[[:alpha:]]|[[:digit:]]|-)+/,
-    :fqdn => /(?:[[:alpha:]]|[[:digit:]]|-|\.)+/}
+    :dns => /(?:[[:alpha:]]|[[:digit:]]|\-)+/,
+    :fqdn => /(?:[[:alpha:]]|[[:digit:]]|\-|\.)+/}
 
   # == Creation
   # To use the AlphaNumericsValidator, initialize it as any other class
@@ -38,7 +38,7 @@ class AlphaNumericValidator < ActiveModel::EachValidator
 
   def validate_each(record, attribute, value) #:nodoc:
     @record = record
-    opts = {:allow_whitespace => true}
+    opts = {:allow_whitespace => ![:dns, :fqdn].member?(@options[:punctuation])}
     @options = opts.merge @options
 
     # TODO: document why value[1]
