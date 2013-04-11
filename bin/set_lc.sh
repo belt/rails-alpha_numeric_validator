@@ -38,10 +38,10 @@ case "${my_ostype}" in
   ;;
 'linux' )
   LANG='en_US.UTF-8'; builtin export LANG
+  LC_ALL='en_US.UTF-8'; builtin export LC_ALL
   ;;
 * )
   echo "Unsupported OS: ${my_ostype}"
   ;;
 esac
 
-rvm 1.9.3-p392-patched@rails-alpha_numeric_validator
