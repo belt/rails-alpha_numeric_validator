@@ -38,12 +38,11 @@ class AlphaNumericValidator < ActiveModel::EachValidator
 
   def validate_each(record, attribute, value) #:nodoc:
     @record = record
-    opts = {allow_whitespace: true}
-    @options = opts.merge @options
+    @options = {allow_whitespace: true, punctuation: :default}.merge @options
 
     # TODO: document why value[1]
     @string = value.is_a?(Array) ? value[1] : value
-    record.errors[attribute] << 'invalid characters' if !(@string.nil? || @string.class.ancestors.include?(Numeric) || is_valid?)
+    record.errors[attribute] << 'invalid characters' if !(@string || @string.class.ancestors.include?(Numeric) || is_valid?)
   end
 
   # :call-seq:
@@ -63,10 +62,10 @@ class AlphaNumericValidator < ActiveModel::EachValidator
   # TODO: support international DNS
 
   def is_valid_string?
-    return true if @options[:allow_nil] && @string.nil?
+    return true if @options[:allow_nil] && !@string
     return false if !@options[:allow_blank] && @string.blank?
     return false if !@options[:allow_whitespace] && has_whitespace?
-    re = PUNCTUATION_REGEXP[@options[:punctuation] ? @options[:punctuation].to_s.to_sym : :default]
+    re = PUNCTUATION_REGEXP[@options[:punctuation].to_sym]
     @string.to_s.gsub(re, "").blank?
   end
 
