@@ -68,10 +68,10 @@ class AlphaNumericValidator < ActiveModel::EachValidator
   # TODO: support international DNS
 
   def is_valid_string?
-    return true if @options[:allow_nil] && !@string
+    return true if @options[:allow_nil] && @string.nil?
     return false if !@options[:allow_blank] && @string.blank?
     return false if !@options[:allow_whitespace] && has_whitespace?
-    re = PUNCTUATION_REGEXP[@options[:punctuation].to_sym]
+    re = PUNCTUATION_REGEXP[@options[:punctuation] ? @options[:punctuation].to_s.to_sym : :default]
     @string.to_s.gsub(re, "").blank?
   end
 
