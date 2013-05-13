@@ -5,27 +5,30 @@ class AlphaNumericValidator < ActiveModel::EachValidator
   attr_accessor :string # :nodoc:
 
   PUNCTUATION_REGEXP = {
-    :default => /(?:[[:alpha:]]|[[:digit:]])+/,
+    default: /(?:[[:alpha:]]|[[:digit:]])+/,
     :true => /(?:[[:graph:]])+/,
-    :limited => /(?:[[:alpha:]]|[[:digit:]]|[_\+\.\?,\-!'\/#])+/,
-    :dns => /(?:[[:alpha:]]|[[:digit:]]|\-)+/,
-    :fqdn => /(?:[[:alpha:]]|[[:digit:]]|\-|\.)+/}
+    limited: /(?:[[:alpha:]]|[[:digit:]]|[_\+\.\?,\-!'\/#])+/, # ' vim-color-syntax hack
+    dns: /(?:[[:alpha:]]|[[:digit:]]|-)+/,
+    fqdn: /(?:[[:alpha:]]|[[:digit:]]|-|\.)+/}
+
+  WHITESPACE_EXCEPTIONS = [:dns, :fqdn]
 
   # == Creation
   # To use the AlphaNumericValidator, initialize it as any other class
   #
   #   class ExampleValidator < ActiveRecord::Base
-  #     validates :attr1, :alpha_numeric => true
-  #     validates :attr2, :alpha_numeric => { :punctuation => true }
-  #     validates :attr3, :alpha_numeric => { :punctuation => :limited }
-  #     validates :attr4, :alpha_numeric => { :allow_nil => false, :allow_blank => false }
-  #     validates :attr4, :alpha_numeric => { :allow_whitespace => true }
-  #     validates :attr5, :alpha_numeric => { :punctuation => :dns }
+  #     validates :attr1, alpha_numeric: true
+  #     validates :attr2, alpha_numeric: {punctuation: true}
+  #     validates :attr3, alpha_numeric: {punctuation: :limited}
+  #     validates :attr4, alpha_numeric: {allow_nil: false, allow_blank: false}
+  #     validates :attr4, alpha_numeric: {allow_whitespace: true}
+  #     validates :attr4, alpha_numeric: {dns: true}
   #   end
 
   def initialize(*args) # :nodoc:
     @errors = []
     @record = nil
+    @options = @options.merge punctuation: :default
     super(*args)
   end
 
@@ -38,12 +41,14 @@ class AlphaNumericValidator < ActiveModel::EachValidator
 
   def validate_each(record, attribute, value) #:nodoc:
     @record = record
-    opts = {:allow_whitespace => ![:dns, :fqdn].member?(@options[:punctuation])}
+    opts = {:allow_whitespace => !WHITESPACE_EXCEPTIONS.member?(@options[:punctuation])}
     @options = opts.merge @options
 
     # TODO: document why value[1]
     @string = value.is_a?(Array) ? value[1] : value
-    record.errors[attribute] << 'invalid characters' if !(@string.nil? || @string.class.ancestors.include?(Numeric) || is_valid?)
+    if !(@string.nil? || @string.class.ancestors.include?(Numeric) || is_valid?)
+      record.errors[attribute] << 'invalid characters'
+    end
   end
 
   # :call-seq:
@@ -63,10 +68,10 @@ class AlphaNumericValidator < ActiveModel::EachValidator
   # TODO: support international DNS
 
   def is_valid_string?
-    return true if @options[:allow_nil] && @string.nil?
+    return true if @options[:allow_nil] && !@string
     return false if !@options[:allow_blank] && @string.blank?
     return false if !@options[:allow_whitespace] && has_whitespace?
-    re = PUNCTUATION_REGEXP[@options[:punctuation] ? @options[:punctuation].to_s.to_sym : :default]
+    re = PUNCTUATION_REGEXP[@options[:punctuation].to_sym]
     @string.to_s.gsub(re, "").blank?
   end
 
