@@ -7,7 +7,7 @@ class AlphaNumericValidator < ActiveModel::EachValidator
   PUNCTUATION_REGEXP = {
     default: /(?:[[:alpha:]]|[[:digit:]])+/,
     :true => /(?:[[:graph:]])+/,
-    limited: /(?:[[:alpha:]]|[[:digit:]]|[_\+\.\?,\-!'\/#])+/, # ' vim-color-syntax hack
+    limited: /(?:[[:alpha:]]|[[:digit:]]|[_:\+\.\?,\-!'\/#])+/, # ' vim-color-syntax hack
     dns: /(?:[[:alpha:]]|[[:digit:]]|-)+/,
     fqdn: /(?:[[:alpha:]]|[[:digit:]]|-|\.)+/}
 
