@@ -51,7 +51,7 @@ class AlphaNumericValidatorTest < Test::Unit::TestCase
       :server_name => 'hello-world', :website => 'hello-world.example.com', :id_code => 'abc123')
     assert @model.valid?
     validations = {name: [['Bob1 Jones2', 'abcdef'], ['Bob# Jones?', '!@#$!@']],
-      organization: [["McDonald's", 'Yahoo!', 'ABC-DEF + GHI'], %w(A@B XYZ~3)],
+      organization: [["McDonald's", 'Yahoo!', 'ABC-DEF + GHI', 'with: colons'], %w(A@B XYZ~3)],
       favorite_quote: [['This$is=a& good*string', '~!@#$%^&*()'], %W(Hello\x00)],
       server_name: [%w(hello1 abcdef), ['hello world', 'hello~world']],
       website: [%w(abc123.example.com example.com), ['he llo.example.com', 'my@site.com']],
