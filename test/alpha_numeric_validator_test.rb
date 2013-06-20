@@ -25,7 +25,7 @@ class Model < ActiveRecord::Base
   attr_accessible :name, :organization, :favorite_quote, :server_name, :website, :id_code
   validates :name, :alpha_numeric => true
   validates :organization, :alpha_numeric => {punctuation: :limited}
-  validates :favorite_quote, :alpha_numeric => {punctuation: true, allow_nil: true, allow_blank: true}
+  validates :favorite_quote, :alpha_numeric => {punctuation: true}
   validates :server_name, :alpha_numeric => {punctuation: :dns}
   validates :website, :alpha_numeric => {punctuation: :fqdn}
   validates :id_code, :alpha_numeric => {allow_whitespace: false}
@@ -50,7 +50,7 @@ class AlphaNumericValidatorTest < Test::Unit::TestCase
     @model = Model.new(:name => 'Paul Belt', :organization => 'Hello Corp.', :favorite_quote => 'Hello world!',
       :server_name => 'hello-world', :website => 'hello-world.example.com', :id_code => 'abc123')
     assert @model.valid?
-    validations = {name: [['Bob1 Jones2', 'abcdef'], ['Bob# Jones?', '!@#$!@']],
+    validations = {name: [['Bob1 Jones2', 'abcdef', '', nil], ['Bob# Jones?', '!@#$!@']],
       organization: [["McDonald's", 'Yahoo!', 'ABC-DEF + GHI', 'with: colons'], %w(A@B XYZ~3)],
       favorite_quote: [['This$is=a& good*string', '~!@#$%^&*()'], %W(Hello\x00)],
       server_name: [%w(hello1 abcdef), ['hello world', 'hello~world']],
