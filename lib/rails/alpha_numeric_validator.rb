@@ -20,7 +20,6 @@ class AlphaNumericValidator < ActiveModel::EachValidator
   #     validates :attr1, alpha_numeric: true
   #     validates :attr2, alpha_numeric: {punctuation: true}
   #     validates :attr3, alpha_numeric: {punctuation: :limited}
-  #     validates :attr4, alpha_numeric: {allow_nil: false, allow_blank: false}
   #     validates :attr4, alpha_numeric: {allow_whitespace: true}
   #     validates :attr4, alpha_numeric: {dns: true}
   #   end
@@ -68,8 +67,6 @@ class AlphaNumericValidator < ActiveModel::EachValidator
   # TODO: support international DNS
 
   def is_valid_string?
-    return true if @options[:allow_nil] && !@string
-    return false if !@options[:allow_blank] && @string.blank?
     return false if !@options[:allow_whitespace] && has_whitespace?
     re = PUNCTUATION_REGEXP[@options[:punctuation].to_s.to_sym]
     @string.to_s.gsub(re, "").blank?
