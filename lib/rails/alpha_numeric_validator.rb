@@ -8,7 +8,7 @@ class AlphaNumericValidator < ActiveModel::EachValidator
     default: /(?:[[:alpha:]]|[[:digit:]])+/,
     :true => /(?:[[:graph:]])+/,
     limited: /(?:[[:alpha:]]|[[:digit:]]|[_:\+\.\?,\-!'\/#])+/, # ' vim-color-syntax hack
-    dns: /(?:[[:alpha:]]|[[:digit:]]|-)+/,
+    dns: /(?:[[:alpha:]]|[[:digit:]]|[\.\-])+/,
     fqdn: /(?:[[:alpha:]]|[[:digit:]]|-|\.)+/}
 
   WHITESPACE_EXCEPTIONS = [:dns, :fqdn]
